@@ -274,7 +274,7 @@ params = {
     'model_id': 'deepseek-chat',  # Specifies the DeepSeek model ID for making predictions.
     'prediction_column': 'deepseek-chat_prediction',  # Specifies the column where predictions will be stored.
     'pre_path': 'Datasets/',  # Specifies the base directory path where dataset files are located.
-    'data_set': 'dataset_DEEP.csv',  # Defines the path to the CSV dataset file.
+    'data_set': 'dataset.csv',  # Defines the path to the CSV dataset file.
     'prompt_array': {},  # Can be an empty array for simple projects.
     # Defines the system prompt that describes the task.
     'system': 'You are an AI assistant specializing in consumer complaint classification.',
