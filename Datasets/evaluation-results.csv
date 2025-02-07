@@ -1,0 +1,6 @@
+Model,Accuracy,Precision,Recall,F1
+gpt_4o,0.736,0.7546,0.736,0.7358
+gpt_4o_mini,0.691,0.7026,0.691,0.6933
+claude_3_5_sonnet,0.763,0.7973,0.763,0.7617
+claude-3-5-haiku,0.721,0.7287,0.721,0.7227
+deepseek-chat,0.737,0.752,0.737,0.7368
