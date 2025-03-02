@@ -1,9 +1,10 @@
+import matplotlib
+matplotlib.use('Agg')
 import pandas as pd
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 import matplotlib.pyplot as plt
 import os
 import seaborn as sns
-
 
 class EvaluationMethods:
     def __init__(self, dataset_path=''):
@@ -159,23 +160,31 @@ class EvaluationMethods:
     column1 (str): The name of the first column with string labels.
     column2 (str): The name of the second column with string labels.
     """
+
     def plot_heatmap(self, original_column, prediction_column):
         data = pd.read_csv(self.pre_path + self.dataset_path)
         cross_tab = pd.crosstab(data[original_column], data[prediction_column])
 
-        plt.figure(figsize=(12, 10))  # Increase the figure size if needed
+        plt.figure(figsize=(12, 10))
         sns.heatmap(cross_tab, annot=True, fmt='d', cmap='YlGnBu')
 
         plt.title(f'Heatmap of {original_column} vs. {prediction_column}')
         plt.xlabel(prediction_column)
         plt.ylabel(original_column)
 
-        # Rotate the x and y axis labels to make them more readable
-        plt.xticks(rotation=45, ha="right")  # Rotate x-axis labels
-        plt.yticks(rotation=0)  # Keep y-axis labels horizontal if needed
+        plt.xticks(rotation=45, ha="right")
+        plt.yticks(rotation=0)
 
-        plt.tight_layout()  # Automatically adjusts layout to make room for labels
+        plt.tight_layout()
+
+        output_dir = "../Plots"
+        os.makedirs(output_dir, exist_ok=True)
+
+        output_path = os.path.join(output_dir, f'heatmap_{original_column}_vs_{prediction_column}.png')
+        plt.savefig(output_path, dpi=300, bbox_inches='tight')
+
         plt.show()
+        print(f"Heatmap saved at: {output_path}")
 
 
 # Example Usage
@@ -184,23 +193,50 @@ EVM = EvaluationMethods(dataset_path='dataset.csv')
 
 # # Count correct predictions
 # print(str(EVM.count_matching_rows('product', 'gpt_4o_prediction')))
+# print(str(EVM.count_matching_rows('product', 'gpt-4.5-preview_prediction')))
+# print(str(EVM.count_matching_rows('product', 'gpt-o1_prediction')))
 # print(str(EVM.count_matching_rows('product', 'gpt_4o_mini_prediction')))
+# print(str(EVM.count_matching_rows('product', 'gpt-o3-mini_prediction')))
 # print(str(EVM.count_matching_rows('product', 'claude_3_5_sonnet_prediction')))
+# print(str(EVM.count_matching_rows('product', 'claude-3-7-sonnet_prediction')))
 # print(str(EVM.count_matching_rows('product', 'claude_3_5_haiku_prediction')))
 # print(str(EVM.count_matching_rows('product', 'deepseek-chat_prediction')))
+# print(str(EVM.count_matching_rows('product', 'deepseek-reasoner_prediction')))
+# print(str(EVM.count_matching_rows('product', 'gemini-2.0-flash_prediction')))
+# print(str(EVM.count_matching_rows('product', 'gemini-2.0-flash-lite_prediction')))
+# print(str(EVM.count_matching_rows('product', 'gemini-1.5-pro_prediction')))
+# print(str(EVM.count_matching_rows('product', 'gemini-1.5-flash_prediction')))
+
 
 # # Evaluate the predictions made by each model
 # print(f'gpt_4o: ' + str(EVM.evaluate_results('product', 'gpt_4o_prediction', 'gpt_4o')))
+# print(f'gpt-4.5-preview: ' + str(EVM.evaluate_results('product', 'gpt-4.5-preview_prediction', 'gpt-4.5-preview')))
+# print(f'gpt-o1: ' + str(EVM.evaluate_results('product', 'gpt-o1_prediction', 'gpt-o1')))
 # print(f'gpt_4o_mini: ' + str(EVM.evaluate_results('product', 'gpt_4o_mini_prediction', 'gpt_4o_mini')))
+# print(f'gpt-o3-mini: ' + str(EVM.evaluate_results('product', 'gpt-o3-mini_prediction', 'gpt-o3-mini')))
 # print(f'claude_3_5_sonnet: ' + str(EVM.evaluate_results('product', 'claude_3_5_sonnet_prediction', 'claude_3_5_sonnet')))
+# print(f'claude-3-7-sonnet: ' + str(EVM.evaluate_results('product', 'claude-3-7-sonnet_prediction', 'claude-3-7-sonnet')))
 # print(f'claude-3-5-haiku: ' + str(EVM.evaluate_results('product', 'claude_3_5_haiku_prediction', 'claude-3-5-haiku')))
 # print(f'deepseek-chat: ' + str(EVM.evaluate_results('product', 'deepseek-chat_prediction', 'deepseek-chat')))
+# print(f'deepseek-reasoner: ' + str(EVM.evaluate_results('product', 'deepseek-reasoner_prediction', 'deepseek-reasoner')))
+# print(f'gemini-2.0-flash: ' + str(EVM.evaluate_results('product', 'gemini-2.0-flash_prediction', 'gemini-2.0-flash')))
+# print(f'gemini-2.0-flash-lite: ' + str(EVM.evaluate_results('product', 'gemini-2.0-flash-lite_prediction', 'gemini-2.0-flash-lite')))
+# print(f'gemini-1.5-pro: ' + str(EVM.evaluate_results('product', 'gemini-1.5-pro_prediction', 'gemini-1.5-pro')))
+# print(f'gemini-1.5-flash: ' + str(EVM.evaluate_results('product', 'gemini-1.5-flash_prediction', 'gemini-1.5-flash')))
 
-
-print(EVM.plot_heatmap(original_column='product', prediction_column='gpt_4o_prediction'))
-print(EVM.plot_heatmap(original_column='product', prediction_column='gpt_4o_mini_prediction'))
-print(EVM.plot_heatmap(original_column='product', prediction_column='claude_3_5_sonnet_prediction'))
-print(EVM.plot_heatmap(original_column='product', prediction_column='claude_3_5_haiku_prediction'))
-print(EVM.plot_heatmap(original_column='product', prediction_column='deepseek-chat_prediction'))
+# print(EVM.plot_heatmap(original_column='product', prediction_column='gpt_4o_prediction'))
+# print(EVM.plot_heatmap(original_column='product', prediction_column='gpt-4.5-preview_prediction'))
+# print(EVM.plot_heatmap(original_column='product', prediction_column='gpt-o1_prediction'))
+# print(EVM.plot_heatmap(original_column='product', prediction_column='gpt_4o_mini_prediction'))
+# print(EVM.plot_heatmap(original_column='product', prediction_column='gpt-o3-mini_prediction'))
+# print(EVM.plot_heatmap(original_column='product', prediction_column='claude_3_5_sonnet_prediction'))
+# print(EVM.plot_heatmap(original_column='product', prediction_column='claude-3-7-sonnet_prediction'))
+# print(EVM.plot_heatmap(original_column='product', prediction_column='claude_3_5_haiku_prediction'))
+# print(EVM.plot_heatmap(original_column='product', prediction_column='deepseek-chat_prediction'))
+# print(EVM.plot_heatmap(original_column='product', prediction_column='deepseek-reasoner_prediction'))
+# print(EVM.plot_heatmap(original_column='product', prediction_column='gemini-2.0-flash_prediction'))
+# print(EVM.plot_heatmap(original_column='product', prediction_column='gemini-2.0-flash-lite_prediction'))
+# print(EVM.plot_heatmap(original_column='product', prediction_column='gemini-1.5-pro_prediction'))
+# print(EVM.plot_heatmap(original_column='product', prediction_column='gemini-1.5-flash_prediction'))
 
 

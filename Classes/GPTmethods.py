@@ -342,8 +342,17 @@ params = {
 # params['model_id'] = 'gpt-4o'
 # params['prediction_column'] = 'gpt_4o_prediction'
 
-params['model_id'] = 'gpt-4o-mini'
-params['prediction_column'] = 'gpt_4o_mini_prediction'
+# params['model_id'] = 'gpt-4o-mini'
+# params['prediction_column'] = 'gpt_4o_mini_prediction'
+
+# params['model_id'] = 'gpt-4.5-preview-2025-02-27'
+# params['prediction_column'] = 'gpt-4.5-preview_prediction'
+
+# params['model_id'] = 'o1-2024-12-17'
+# params['prediction_column'] = 'gpt-o1_prediction'
+
+# params['model_id'] = 'o3-mini-2025-01-31'
+# params['prediction_column'] = 'gpt-o3-mini_prediction'
 
 """
 Create an instance of the GPTmethods class, passing the `params` dictionary to the constructor for initialization.

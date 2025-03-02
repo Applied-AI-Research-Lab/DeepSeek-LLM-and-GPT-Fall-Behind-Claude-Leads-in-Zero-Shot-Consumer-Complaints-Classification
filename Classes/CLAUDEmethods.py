@@ -271,8 +271,11 @@ params = {
 # params['model_id'] = 'claude-3-5-sonnet-latest'
 # params['prediction_column'] = 'claude_3_5_sonnet_prediction'
 
-params['model_id'] = 'claude-3-5-haiku-latest'
-params['prediction_column'] = 'claude_3_5_haiku_prediction' # claude_3_5_haiku_prediction
+# params['model_id'] = 'claude-3-5-haiku-latest'
+# params['prediction_column'] = 'claude_3_5_haiku_prediction' # claude_3_5_haiku_prediction
+
+# params['model_id'] = 'claude-3-7-sonnet-latest'
+# params['prediction_column'] = 'claude-3-7-sonnet_prediction'
 
 """
 Create an instance of the CLAUDEmethods class, passing the `params` dictionary to the constructor for initialization.

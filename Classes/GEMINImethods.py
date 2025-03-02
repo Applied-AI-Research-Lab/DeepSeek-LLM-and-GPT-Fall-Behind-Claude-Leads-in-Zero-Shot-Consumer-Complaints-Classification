@@ -1,29 +1,28 @@
 import os
 import pandas as pd
-import openai
-from openai import OpenAI
+#  pip install google-genai
+from google import genai
 import json
 import logging
 import re
 import time
 
 
-class DEEPSEEKmethods:
+class GEMINImethods:
     def __init__(self, params):
         """
         Initialize the class with the provided parameters.
-        The constructor sets up the DEEPSEEK API key, model configuration, and various other
+        The constructor sets up the GEMINI API key, model configuration, and various other
         parameters needed for generating prompts and making predictions.
 
         Args:
             params (dict): A dictionary containing the configuration settings.
         """
-        # Access the OpenAI API key from environment variables
-        # openai.api_key = os.environ.get("OPENAI_API_KEY")
-        self.api_key = os.environ.get("DEEPSEEK_API_KEY")
+        # Access the GEMINI API key from environment variables
+        self.api_key = os.environ.get("GEMINI_API_KEY")
 
         # Initialize class variables using the provided parameters
-        self.model_id = params['model_id']  # The model ID to use (e.g., deepseek-chat)
+        self.model_id = params['model_id']  # The model ID to use (e.g., gemini-2.0-flash)
         self.prediction_column = params['prediction_column']  # Specifies the column where predictions will be stored
         self.pre_path = params['pre_path']  # The path to datasets
         self.data_set = params['data_set']  # Defines the path to the CSV dataset file
@@ -52,9 +51,9 @@ class DEEPSEEKmethods:
         return updated_prompt  # This method returns the whole new custom prompt
 
     """
-    Creates a training and validation JSONL file for DeepSeek fine-tuning.
+    Creates a training and validation JSONL file for GEMINI fine-tuning.
     The method reads a CSV dataset, generates prompt-completion pairs for each row, and formats the data into
-    the required JSONL structure for DeepSeek fine-tuning.
+    the required JSONL structure for GEMINI fine-tuning.
     The generated JSONL file will contain system, user, and assistant messages for each training || validation instance.
     """
 
@@ -85,7 +84,7 @@ class DEEPSEEKmethods:
             )
 
         # Define the output file path for the JSONL file
-        output_file_path = self.pre_path + "ft_dataset_deepseek_" + data_type + ".jsonl"  # Define the path
+        output_file_path = self.pre_path + "ft_dataset_gemini_" + data_type + ".jsonl"  # Define the path
         # Write the formatted data to the JSONL file
         with open(output_file_path, 'w') as output_file:
             for record in data:
@@ -97,26 +96,32 @@ class DEEPSEEKmethods:
         return {"status": True, "data": f"JSONL file '{output_file_path}' has been created."}
 
     """
-    Create a conversation with the DeepSeek model by sending a series of messages and receiving a response.
+    Create a conversation with the GEMINI model by sending a series of messages and receiving a response.
     This method constructs the conversation and returns the model's reply based on the provided messages.
     """
 
-    def deepseek_conversation(self, conversation):
-        try: # DeepSeek uses OpenAI's SDK
-            client = OpenAI(api_key=self.api_key, base_url="https://api.deepseek.com")
+    def gemini_conversation(self, conversation):
+        try:
+            client = genai.Client(api_key=self.api_key)
 
-            completion = client.chat.completions.create(
+            response = client.models.generate_content(
                 model=self.model_id,
-                messages=conversation,
-                stream=False
+                contents=conversation,
             )
-            return completion.choices[0].message.content
+            return response.text
+
+            # older version
+            # import google.generativeai as genai
+            # genai.configure(api_key=self.api_key)
+            # model = genai.GenerativeModel(self.model_id)
+            # response = model.generate_content(conversation)
+            # return response.text
         except Exception as e:
-            print(f"Error getting response from DeepSeek: {e}")
+            print(f"Error getting response from GEMINI: {e}")
             return None
 
     """
-    Cleans the response from the DeepSeek model by attempting to extract and parse a JSON string.
+    Cleans the response from the GEMINI model by attempting to extract and parse a JSON string.
     If the response is already in dictionary format, it is returned directly.
     If the response contains a JSON string, it will be extracted, cleaned, and parsed.
     If no valid JSON is found or a decoding error occurs, an error message is logged.
@@ -147,19 +152,20 @@ class DEEPSEEKmethods:
             return {"status": False, "data": f"JSON parsing error: {str(e)}. Input: '{a_field}', Response: {response}"}
 
     """
-    Prompts the DeepSeek model to generate a prediction based on the provided input.
+    Prompts the GEMINI model to generate a prediction based on the provided input.
     The method constructs a conversation with the model using the system message and user input, 
     and processes the model's response to return a clean, formatted prediction.
     """
 
-    def deepseek_prediction(self, input):
-        conversation = [
-            {'role': 'system', 'content': self.system},
-            {'role': 'user', 'content': self.generate_prompt(feature=input[self.feature_col])}
-        ]
+    def gemini_prediction(self, input):
+        conversation = self.system + ' ' + self.generate_prompt(feature=input[self.feature_col])
+        # conversation = [
+        #     {'role': 'system', 'content': self.system},
+        #     {'role': 'user', 'content': self.generate_prompt(feature=input[self.feature_col])}
+        # ]
 
         while True:
-            conversation_response = self.deepseek_conversation(conversation)  # Call the model
+            conversation_response = self.gemini_conversation(conversation)  # Call the model
 
             if conversation_response is None:
                 logging.warning("Received None response. Retrying...")
@@ -176,7 +182,7 @@ class DEEPSEEKmethods:
 
     """
     Makes predictions for a specific dataset and append the predictions to a new column.
-    This method processes each row in the dataset, generates predictions using the DeepSeek model, 
+    This method processes each row in the dataset, generates predictions using the GEMINI model, 
     and updates the dataset with the predicted values in the specified prediction column.
     """
 
@@ -217,7 +223,7 @@ class DEEPSEEKmethods:
 
                 start_time = time.time()  # Start timer
 
-                prediction = self.deepseek_prediction(input=row)
+                prediction = self.gemini_prediction(input=row)
 
                 end_time = time.time()  # End timer
                 elapsed_time = round(end_time - start_time, 4)  # Compute elapsed time (rounded to 4 decimal places)
@@ -258,7 +264,9 @@ class DEEPSEEKmethods:
 
 
 # TODO: Before running the script:
-#  Ensure the DEEPSEEK_API_KEY is set as an environment variable to enable access to the DEEPSEEK API.
+#  pip install google-genai
+#  Get an API KEY from https://aistudio.google.com/app/apikey
+#  Ensure the GEMINI_API_KEY is set as an environment variable to enable access to the GEMINI API.
 
 """
 Configure the logging module to record error messages in a file named 'error_log.txt'.
@@ -271,8 +279,8 @@ It includes specifications for the model ID, dataset details, system and task-sp
 and parameters for prediction output, response format, and model behavior.
 """
 params = {
-    'model_id': 'deepseek-chat',  # Specifies the DeepSeek model ID for making predictions.
-    'prediction_column': 'deepseek-chat_prediction',  # Specifies the column where predictions will be stored.
+    'model_id': 'gemini-2.0-flash',  # Specifies the GEMINI model ID for making predictions.
+    'prediction_column': 'gemini-2.0-flash_prediction',  # Specifies the column where predictions will be stored.
     'pre_path': 'Datasets/',  # Specifies the base directory path where dataset files are located.
     'data_set': 'dataset.csv',  # Defines the path to the CSV dataset file.
     'prompt_array': {},  # Can be an empty array for simple projects.
@@ -288,18 +296,23 @@ params = {
     'temperature': 0,  # Sets the temperature for response variability; 0 provides the most deterministic response.
 }
 
-# params['model_id'] = 'deepseek-chat'
-# params['prediction_column'] = 'deepseek-chat_prediction'
+# params['model_id'] = 'gemini-2.0-flash'  # 9.08
+# params['prediction_column'] = 'gemini-2.0-flash_prediction'
 
-# params['model_id'] = 'deepseek-reasoner'
-# params['prediction_column'] = 'deepseek-reasoner_prediction'
+# params['model_id'] = 'gemini-2.0-flash-lite'  # 9.10-9.22
+# params['prediction_column'] = 'gemini-2.0-flash-lite_prediction'
+
+# params['model_id'] = 'gemini-1.5-pro'  # 9.24-9.39
+# params['prediction_column'] = 'gemini-1.5-pro_prediction'
+
+# params['model_id'] = 'gemini-1.5-flash'  # 9.40
+# params['prediction_column'] = 'gemini-1.5-flash_prediction'
+"""
+Create an instance of the GEMINImethods class, passing the `params` dictionary to the constructor for initialization.
+"""
+GEMINI = GEMINImethods(params)
 
 """
-Create an instance of the DEEPSEEKmethods class, passing the `params` dictionary to the constructor for initialization.
+Call the `predictions` method of the GEMINImethods instance to make predictions on the specified dataset.
 """
-DEEPSEEK = DEEPSEEKmethods(params)
-
-"""
-Call the `predictions` method of the DEEPSEEKmethods instance to make predictions on the specified dataset.
-"""
-DEEPSEEK.predictions()
+GEMINI.predictions()
