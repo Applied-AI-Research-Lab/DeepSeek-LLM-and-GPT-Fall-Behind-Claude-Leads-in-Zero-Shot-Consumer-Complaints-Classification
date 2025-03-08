@@ -1,7 +1,7 @@
 # Think Before You Classify: The Rise of Reasoning Large Language Models for Consumer Complaint Detection and Classification
 
 ## Article
-* **Journal**: Electronics 2025, 14(6), 1070
+* **Journal**: [Electronics](https://www.mdpi.com/journal/electronics)
 * **Title**: [Think Before You Classify: The Rise of Reasoning Large Language Models for Consumer Complaint Detection and Classification](https://www.mdpi.com/2079-9292/14/6/1070)
 * **DOI**: [https://doi.org/10.3390/electronics14061070](https://doi.org/10.3390/electronics14061070)
 
